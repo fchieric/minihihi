@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:30:43 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 19:50:59 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/13 20:05:54 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ typedef struct s_token
 // } t_command;
 
 t_token	*lexer(const char *input, size_t i, t_token *tokens);
-void	print_tokens(t_token *tokens);
+void	add_token(t_token **tokens, t_token_type type, const char *value);
 
 /*
 typedef struct s_var

@@ -6,42 +6,11 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 21:53:46 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 19:58:20 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/13 20:05:34 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-// TODO aggiungere libft e implementarne le ft_funzioni
-// Funzione per aggiungere un token alla lista
-// TODO usare safe malloc
-void	add_token(t_token **tokens, t_token_type type, const char *value)
-{
-	t_token	*new_token;
-	t_token	*tmp;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-	{
-		perror("malloc");
-		return ;
-	}
-	new_token->type = type;
-	new_token->value = strdup(value);
-	new_token->next = NULL;
-	if (*tokens == NULL)
-	{
-		*tokens = new_token;
-	}
-	else
-	{
-		tmp = *tokens;
-		while (tmp->next != NULL)
-		{
-			tmp = tmp->next;
-		}
-		tmp->next = new_token;
-	}
-}
 
 // questa funzione se non trova la matching ending quote dovrebbe dare errore
 // Salta la virgoletta iniziale (start = *i + 1)
@@ -102,7 +71,6 @@ char	*extract_word(const char *input, size_t *i)
 	return word;
 }
 
-
 char *extract_token(const char *input, size_t *i, t_token_type *type)
 {
 	if (input[*i] == '"' || input[*i] == '\'')
@@ -116,7 +84,6 @@ char *extract_token(const char *input, size_t *i, t_token_type *type)
 		return extract_word(input, i);
 	}
 }
-
 
 void token_helper(t_token **tokens, const char *input, size_t *i)
 {
@@ -171,19 +138,3 @@ t_token *lexer(const char *input, size_t i, t_token *tokens)
 	}
 	return tokens;
 }
-
-
-
-
-// Funzione di test per stampare i token
-void print_tokens(t_token *tokens)
-{
-	while (tokens != NULL)
-	{
-		printf("%d: ", tokens->type);
-		printf("%s\n", tokens->value);
-		tokens = tokens->next;
-	}
-}
-
-
