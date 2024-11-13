@@ -10,10 +10,11 @@
 
 
 typedef enum e_token_type {
-    TOKEN_WORD, // queste devono essere divise in comandi e argomenti e flag
+    TOKEN_WORD, // queste devono essere divise in comandi e argomenti e flag e EOF se li dobbiamo gestire
     TOKEN_PIPE,
 	TOKEN_END,
 	TOKEN_QUOTE,
+	TOKEN_TEXT, //questo è quello tra le virgolette
     TOKEN_REDIRECT_IN,
     TOKEN_REDIRECT_OUT,
     TOKEN_APPEND,
@@ -34,7 +35,7 @@ typedef struct s_command {
     struct s_command *next; // Supporto per pipe
 } t_command;
 
-t_token *lexer(const char *input);
+t_token *lexer(const char *input, size_t i, t_token *tokens);
 void print_tokens(t_token *tokens);
 
 /*
