@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   ft_free_exit.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 15:11:18 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 19:58:48 by fabi             ###   ########.fr       */
+/*   Created: 2024/11/13 19:22:10 by fabi              #+#    #+#             */
+/*   Updated: 2024/11/13 19:50:46 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int main(int argc, char **argv, char **envp)
+void	ft_free_exit(t_token *tokens, int exit_status)
 {
-	const char *input = "echo -n   \"hello world\" | grep 'pattern' > file.txt";
-	//const char *input = "echo -n   \"       hello\" | cat                    > file.txt";
-	//const char *input = "cat << EOF | grep \"pattern\" > output.txt && echo \"Done\"";
-	t_token *tokens = lexer(input, 0, NULL);
-	print_tokens(tokens);
-	return (0);
-}
+	t_token	*tmp;
 
+	while (tokens != NULL)
+	{
+		tmp = tokens;
+		tokens = tokens->next;
+		free(tmp->value);
+		free(tmp);
+	}
+	//g_status = exit_status;
+	exit(1);
+}

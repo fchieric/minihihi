@@ -6,20 +6,24 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 21:53:46 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 17:55:46 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/13 19:58:20 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 // TODO aggiungere libft e implementarne le ft_funzioni
 // Funzione per aggiungere un token alla lista
-void add_token(t_token **tokens, t_token_type type, const char *value)
+// TODO usare safe malloc
+void	add_token(t_token **tokens, t_token_type type, const char *value)
 {
-	t_token *new_token = malloc(sizeof(t_token)); // TODO usare safe malloc
+	t_token	*new_token;
+	t_token	*tmp;
+
+	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 	{
 		perror("malloc");
-		return;
+		return ;
 	}
 	new_token->type = type;
 	new_token->value = strdup(value);
@@ -30,7 +34,7 @@ void add_token(t_token **tokens, t_token_type type, const char *value)
 	}
 	else
 	{
-		t_token *tmp = *tokens;
+		tmp = *tokens;
 		while (tmp->next != NULL)
 		{
 			tmp = tmp->next;
@@ -40,39 +44,43 @@ void add_token(t_token **tokens, t_token_type type, const char *value)
 }
 
 // questa funzione se non trova la matching ending quote dovrebbe dare errore
-char *extract_quote(const char *input, size_t *i)
+// Salta la virgoletta iniziale (start = *i + 1)
+// Evita il loop infinito (*i = end)
+// *i = end + 1; // Sposta l'indice oltre la virgoletta di chiusura
+char	*extract_quote(const char *input, size_t *i)
 {
-    size_t start = *i + 1; // Salta la virgoletta iniziale
-    size_t end = start;
+	size_t	start;
+	size_t	end;
+	char	*text;
 
-    while (input[end] && input[end] != input[*i])
-    {
-        end++;
-    }
-    if (input[end] != input[*i])
-    {
-        fprintf(stderr, "Error: unmatched quote\n");
-        *i = end; // Evita il loop infinito
-        return NULL;
-    }
-
-    char *text = malloc(end - start + 1);
-    if (!text)
-    {
-        perror("malloc");
-        return NULL;
-    }
-    strncpy(text, &input[start], end - start);
-    text[end - start] = '\0';
-
-    *i = end + 1; // Sposta l'indice oltre la virgoletta di chiusura
-    return text;
+	start = *i + 1; // Salta la virgoletta iniziale
+	end = start;
+	while (input[end] && input[end] != input[*i])
+		end++;
+	if (input[end] != input[*i]) // Mancata chiusura
+	{
+		fprintf(stderr, "Error: unmatched quote\n");
+		*i = end; // Sposta alla fine per evitare loop
+		return (NULL);
+	}
+	text = malloc(end - start + 1);
+	if (!text)
+	{
+		perror("malloc");
+		return (NULL);
+	}
+	strncpy(text, &input[start], end - start);
+	text[end - start] = '\0';
+	*i = end + 1; // Sposta l'indice oltre la virgoletta di chiusura
+	return (text);
 }
 
 // Funzione per estrarre una parola dall'input
-char *extract_word(const char *input, size_t *i)
+char	*extract_word(const char *input, size_t *i)
 {
-	size_t start = *i;
+	size_t	start;
+
+	start = *i;
 	while (input[start] && isspace(input[start]))
 		start++;
 
@@ -97,16 +105,16 @@ char *extract_word(const char *input, size_t *i)
 
 char *extract_token(const char *input, size_t *i, t_token_type *type)
 {
-    if (input[*i] == '"' || input[*i] == '\'')
-    {
-        *type = TOKEN_TEXT; // Imposta il tipo come TOKEN_TEXT
-        return extract_quote(input, i);
-    }
-    else
-    {
-        *type = TOKEN_WORD; // Imposta il tipo come TOKEN_WORD
-        return extract_word(input, i);
-    }
+	if (input[*i] == '"' || input[*i] == '\'')
+	{
+		*type = TOKEN_TEXT; // Contrassegna come TOKEN_TEXT
+		return extract_quote(input, i);
+	}
+	else
+	{
+		*type = TOKEN_WORD; // Contrassegna come TOKEN_WORD
+		return extract_word(input, i);
+	}
 }
 
 
@@ -137,39 +145,41 @@ void token_helper(t_token **tokens, const char *input, size_t *i)
 // Funzione principale del lexer, input sarà l'argomento del programma. Mi passo la i e la lista per ridurre righe di codice
 t_token *lexer(const char *input, size_t i, t_token *tokens)
 {
-    while (input[i] != '\0')
-    {
-        if (isspace(input[i])) // Ignora spazi
-            i++;
-        else if (input[i] == '|')
-        {
-            add_token(&tokens, TOKEN_PIPE, "|");
-            i++;
-        }
-        else if (input[i] == '>' || input[i] == '<')
-        {
-            token_helper(&tokens, input, &i);
-        }
-        else
-        {
-            t_token_type type;
-            char *token = extract_token(input, &i, &type);
-            if (token)
-            {
-                add_token(&tokens, type, token);
-                free(token);
-            }
-        }
-    }
-    return (tokens);
+	while (input[i] != '\0')
+	{
+		if (isspace(input[i])) // Ignora spazi
+			i++;
+		else if (input[i] == '|')
+		{
+			add_token(&tokens, TOKEN_PIPE, "|");
+			i++;
+		}
+		else if (input[i] == '>' || input[i] == '<')
+		{
+			token_helper(&tokens, input, &i);
+		}
+		else
+		{
+			t_token_type type;
+			char *token = extract_token(input, &i, &type);
+			if (token)
+			{
+				add_token(&tokens, type, token);
+				free(token);
+			}
+		}
+	}
+	return tokens;
 }
+
 
 
 
 // Funzione di test per stampare i token
 void print_tokens(t_token *tokens)
 {
-	while (tokens != NULL) {
+	while (tokens != NULL)
+	{
 		printf("%d: ", tokens->type);
 		printf("%s\n", tokens->value);
 		tokens = tokens->next;
