@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 15:11:18 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 20:05:45 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 10:52:09 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,13 @@ void print_tokens(t_token *tokens)
 
 int main(int argc, char **argv, char **envp)
 {
-	const char *input = "echo -n   \"hello world\" | grep 'pattern' > file.txt";
+	//const char *input = "echo -n   \"hello world\" | grep 'pattern' > file.txt";
 	//const char *input = "echo -n   \"       hello\" | cat                    > file.txt";
 	//const char *input = "cat << EOF | grep \"pattern\" > output.txt && echo \"Done\"";
+	//const char *input = "echo \"hello 'world'\" | grep 'pattern >' >> output.txt";
+	//const char *input = "echo \"hello world | grep 'pattern";
+	const char *input = "cat << EOF | echo \"$HOME\" > result.txt";
+
 	t_token *tokens = lexer(input, 0, NULL);
 	print_tokens(tokens);
 	return (0);

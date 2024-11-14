@@ -1,22 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_free_exit.c                                     :+:      :+:    :+:   */
+/*   error.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:22:10 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 19:50:46 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 11:41:41 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	ft_free_exit(t_token *tokens, int exit_status)
+
+void free_exit_list(t_token *tokens, int exit_status, char *message)
 {
 	t_token	*tmp;
 
-	while (tokens != NULL)
+	printf("%s\n", message);
+	while (tokens)
 	{
 		tmp = tokens;
 		tokens = tokens->next;
@@ -24,5 +26,20 @@ void	ft_free_exit(t_token *tokens, int exit_status)
 		free(tmp);
 	}
 	//g_status = exit_status;
-	exit(1);
+	exit(exit_status);
+}
+
+void	free_exit_str(char *str, int exit_status, char *message)
+{
+	t_token	*tmp;
+	int		i;
+
+	printf("%s\n", message);
+	while (str[i] != '\0')
+	{
+		free(&str[i]);
+		i++;
+	}
+	//g_status = exit_status;
+	exit(exit_status);
 }

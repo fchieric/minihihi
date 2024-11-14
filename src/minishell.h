@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:30:43 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 20:05:54 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 11:59:13 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,21 @@ typedef enum e_token_type
 {
 	TOKEN_WORD,
 	TOKEN_PIPE,
-	TOKEN_END,
+	TOKEN_END, // Fine dell'intero input
 	TOKEN_QUOTE,
 	TOKEN_TEXT,
 	TOKEN_REDIRECT_IN,
 	TOKEN_REDIRECT_OUT,
 	TOKEN_APPEND,
 	TOKEN_HEREDOC,
+	TOKEN_EOF 
 }	t_token_type;
+
+typedef struct s_list
+{
+	void			*content;
+	struct s_list	*next;
+}	t_list;
 
 typedef struct s_token
 {
@@ -59,8 +66,25 @@ typedef struct s_token
 // 	struct s_command *next; // Supporto per pipe
 // } t_command;
 
+//lexer.c
 t_token	*lexer(const char *input, size_t i, t_token *tokens);
+
+//utils.c
 void	add_token(t_token **tokens, t_token_type type, const char *value);
+
+//safe_funcs.c
+void	*safe_malloc(size_t size);
+
+//error.c
+void	free_exit_list(t_token *tokens, int exit_status, char *message);
+void	free_exit_str(char *str, int exit_status, char *message);
+
+//libft.c
+int		ft_isspace(int c);
+void	ft_strncpy(char *dst, const char *src, size_t n);
+char	*ft_strdup(const char *s1);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+
 
 /*
 typedef struct s_var
