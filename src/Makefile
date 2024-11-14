@@ -1,6 +1,6 @@
 NAME = mini
 
-SRC = main.c error.c lexer.c libft.c safe_funcs.c utils.c
+SRC = main.c error.c lexer.c libft.c safe_funcs.c utils.c expander.c
 OBJ = $(SRC:.c=.o)
 
 CC = gcc

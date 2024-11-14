@@ -1,10 +1,10 @@
 - [ ] Display a prompt when waiting for a new command.
 - [ ] Have a working history.
 - [ ] Search and launch the right executable (based on the PATH variable or using a relative or an absolute path).
-- [ ] Avoid using more than one global variable to indicate a received signal. Consider the implications: this approach ensures that your signal handler will not access your main data structures.
-- [ ] Not interpret unclosed quotes or special characters which are not required by the subject such as \ (backslash) or ; (semicolon).
-- [ ] Handle ' (single quote) which should prevent the shell from interpreting the metacharacters in the quoted sequence.
-- [ ] Handle " (double quote) which should prevent the shell from interpreting the metacharacters in the quoted sequence except for $ (dollar sign).
+- [x] Avoid using more than one global variable to indicate a received signal. Consider the implications: this approach ensures that your signal handler will not access your main data structures.
+- [x] Not interpret unclosed quotes or special characters which are not required by the subject such as \ (backslash) or ; (semicolon).
+- [x] Handle ' (single quote) which should prevent the shell from interpreting the metacharacters in the quoted sequence.
+- [x] Handle " (double quote) which should prevent the shell from interpreting the metacharacters in the quoted sequence except for $ (dollar sign).
 - [ ] Implement redirections:
 
    - [ ] < should redirect input.

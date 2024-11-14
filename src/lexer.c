@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 21:53:46 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 11:59:31 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 13:56:26 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,28 +17,35 @@
 // Evita il loop infinito (*i = end)
 // *i = end + 1; // Sposta l'indice oltre la virgoletta di chiusura
 // if (input[end] != input[*i]) // Mancata chiusura
-char	*extract_quote(const char *input, size_t *i)
+char	*extract_quote(const char *input, size_t *i, char **envp)
 {
 	size_t	start;
 	size_t	end;
 	char	*text;
+	char	*temp;
 
-	text = NULL;
-	start = *i + 1;
+	start = *i + 1; // Salta la virgoletta iniziale
 	end = start;
+	text = ft_strdup(""); // Inizializza `text` come stringa vuota
 	while (input[end] && input[end] != input[*i])
-		end++;
-	if (input[end] != input[*i])
 	{
-		*i = end;
-		free_exit_str(text, 1, "Error: unmatched quote");
+		if (input[*i] == '"' && input[end] == '$')
+		{
+			temp = ft_strjoin(text, ft_strndup(&input[start], end - start));
+			free(text);
+			text = expand_env_in_quotes(input, &start, &end, envp, temp);
+		}
+		else
+			end++;
 	}
-	text = safe_malloc(end - start + 1);
-	ft_strncpy(text, &input[start], end - start);
-	text[end - start] = '\0';
+	if (input[end] != input[*i])
+		free_exit_str(text, 1, "Error: unmatched quote");
+	temp = ft_strjoin(text, ft_strndup(&input[start], end - start));
+	free(text);
 	*i = end + 1;
-	return (text);
+	return (temp);
 }
+
 
 // Funzione per estrarre una parola dall'input
 // *i = end; // Sposta l'indice alla posizione successiva
@@ -67,25 +74,20 @@ char	*extract_word(const char *input, size_t *i)
 	return word;
 }
 
-char *extract_token(const char *input, size_t *i, t_token_type *type)
+char *extract_token(const char *input, size_t *i, t_token_type *type, char **envp)
 {
 	if (input[*i] == '"' || input[*i] == '\'')
 	{
 		*type = TOKEN_TEXT;
-		return extract_quote(input, i);
+		return extract_quote(input, i, envp);
 	}
 	else
 	{
-		char *token = extract_word(input, i);
-		if (token && ft_strncmp(token, "EOF", 3) == 0)
-		{
-			*type = TOKEN_EOF;
-			return token;
-		}
 		*type = TOKEN_WORD;
-		return token;
+		return extract_word(input, i);
 	}
 }
+
 
 
 void token_helper(t_token **tokens, const char *input, size_t *i)
@@ -113,7 +115,7 @@ void token_helper(t_token **tokens, const char *input, size_t *i)
 }
 
 // Funzione principale del lexer, input sarà l'argomento del programma. Mi passo la i e la lista per ridurre righe di codice
-t_token *lexer(const char *input, size_t i, t_token *tokens)
+t_token *lexer(const char *input, size_t i, t_token *tokens, char **envp)
 {
 	t_token_type type;
 	
@@ -130,7 +132,7 @@ t_token *lexer(const char *input, size_t i, t_token *tokens)
 			token_helper(&tokens, input, &i);
 		else
 		{
-			char *token = extract_token(input, &i, &type);
+			char *token = extract_token(input, &i, &type, envp);
 			if (token)
 			{
 				add_token(&tokens, type, token);

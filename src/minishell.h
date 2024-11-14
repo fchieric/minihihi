@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:30:43 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 11:59:13 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 13:23:21 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ typedef struct s_token
 // } t_command;
 
 //lexer.c
-t_token	*lexer(const char *input, size_t i, t_token *tokens);
+t_token *lexer(const char *input, size_t i, t_token *tokens, char **envp);
 
 //utils.c
 void	add_token(t_token **tokens, t_token_type type, const char *value);
@@ -84,6 +84,15 @@ int		ft_isspace(int c);
 void	ft_strncpy(char *dst, const char *src, size_t n);
 char	*ft_strdup(const char *s1);
 int		ft_strncmp(const char *s1, const char *s2, size_t n);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_strndup(const char *s1, size_t n);
+int		ft_isalnum(int c);
+int		ft_strlen(const char *s);
+
+
+//expander.c
+char	*expand_env_in_quotes(const char *input, size_t *start, size_t *end, char **envp, char *text);
+char	*get_env_value(const char *var, char **envp);
 
 
 /*

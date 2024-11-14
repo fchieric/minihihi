@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 20:04:44 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/13 20:05:07 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 13:27:27 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,9 @@ void	add_token(t_token **tokens, t_token_type type, const char *value)
 	t_token	*new_token;
 	t_token	*tmp;
 
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-	{
-		perror("malloc");
-		return ;
-	}
+	new_token = safe_malloc(sizeof(t_token));
 	new_token->type = type;
-	new_token->value = strdup(value);
+	new_token->value = ft_strdup(value);
 	new_token->next = NULL;
 	if (*tokens == NULL)
 	{
