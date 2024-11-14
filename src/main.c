@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 15:11:18 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 13:54:50 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 19:30:24 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int main(int argc, char **argv, char **envp)
 	//const char *input = "echo \"hello 'world'\" | grep 'pattern >' >> output.txt";
 	//const char *input = "echo \"hello world | grep 'pattern";
 	//const char *input = "cat << EOF | echo \"$HOME\" > result.txt";
-	const char *input = "echo \"hello $USER, welcome\"";
+	const char *input = "echo \"hello \"$USER\", welcome\"";
 	if (!envp || !*envp) // Verifica se `envp` è NULL o vuoto
 	{
 		fprintf(stderr, "Error: Environment variables are not available\n");

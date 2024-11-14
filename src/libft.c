@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 10:54:23 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 13:19:04 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 17:21:52 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,4 +145,19 @@ int ft_strlen(const char *s)
 	while (s[i])
 		i++;
 	return (i);
+}
+
+char	*ft_strjoin_and_free(char *s1, const char *s2)
+{
+	char	*result;
+
+	if (!s1 && !s2)
+		return (NULL);
+	if (!s1)
+		return (ft_strdup(s2)); // Assicurati di avere ft_strdup implementato
+	if (!s2)
+		return (s1); // Non liberiamo s1 perché è già il risultato
+	result = ft_strjoin(s1, s2);
+	free(s1);
+	return (result);
 }

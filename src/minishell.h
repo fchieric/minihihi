@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:30:43 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 13:23:21 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/14 17:25:12 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,11 +88,12 @@ char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strndup(const char *s1, size_t n);
 int		ft_isalnum(int c);
 int		ft_strlen(const char *s);
-
+char	*ft_strjoin_and_free(char *s1, const char *s2);
 
 //expander.c
 char	*expand_env_in_quotes(const char *input, size_t *start, size_t *end, char **envp, char *text);
 char	*get_env_value(const char *var, char **envp);
+
 
 
 /*
