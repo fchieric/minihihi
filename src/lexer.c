@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/15 12:04:11 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/15 12:20:32 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/15 12:26:58 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,46 +87,59 @@ int is_special_char(char c)
     return (c == '|' || is_redirect_char(c));
 }
 
-// Ottiene l'ultimo token
-t_token *get_last_token(t_token *tokens)
+// Espande una variabile d'ambiente
+char *expand_env_var(const char *input, size_t *i, char **envp)
 {
-    while (tokens && tokens->next)
-        tokens = tokens->next;
-    return (tokens);
+    size_t start;
+    char *var_name;
+    char *value;
+
+    (*i)++;  // Salta il $
+    start = *i;
+    while (input[*i] && (ft_isalnum(input[*i]) || input[*i] == '_'))
+        (*i)++;
+    var_name = ft_strndup(&input[start], *i - start);
+    value = get_env_value(var_name, envp);
+    free(var_name);
+    return (value ? value : ft_strdup(""));
 }
 
-// Aggiunge una singola parola come token
-void add_word_token(t_token **tokens, const char *input, size_t start, size_t end)
+// Gestisce i token heredoc
+void handle_heredoc(t_token **tokens, const char *input, size_t *i)
 {
-    char *word;
+    size_t start;
 
-    if (end <= start)
-        return;
-    word = ft_strndup(&input[start], end - start);
-    add_token(tokens, TOKEN_WORD, word);
-    free(word);
+    add_token(tokens, TOKEN_HEREDOC, "<<");
+    *i += 2;
+    while (input[*i] && ft_isspace(input[*i]))
+        (*i)++;
+    start = *i;
+    while (input[*i] && !ft_isspace(input[*i]) && !is_special_char(input[*i]))
+        (*i)++;
+    if (start < *i)
+    {
+        char *limiter = ft_strndup(&input[start], *i - start);
+        add_token(tokens, 9, limiter);  // TOKEN_HEREDOC_LIMITER
+        free(limiter);
+    }
 }
 
 // Gestisce i caratteri di redirezione
 void handle_redirect(t_token **tokens, const char *input, size_t *i)
 {
-    char current;
-    
-    current = input[*i];
-    if (input[*i + 1] == current)
+    if (input[*i] == '<' && input[*i + 1] == '<')
     {
-        if (current == '>')
-            add_token(tokens, TOKEN_APPEND, ">>");
-        else
-            add_token(tokens, TOKEN_HEREDOC, "<<");
+        handle_heredoc(tokens, input, i);
+    }
+    else if (input[*i + 1] == input[*i])
+    {
+        add_token(tokens, TOKEN_APPEND, ">>");
         (*i) += 2;
     }
     else
     {
-        if (current == '>')
-            add_token(tokens, TOKEN_REDIRECT_OUT, ">");
-        else
-            add_token(tokens, TOKEN_REDIRECT_IN, "<");
+        add_token(tokens, input[*i] == '>' ? TOKEN_REDIRECT_OUT : TOKEN_REDIRECT_IN,
+                 input[*i] == '>' ? ">" : "<");
         (*i)++;
     }
 }
@@ -137,18 +150,37 @@ void process_quoted_content(t_token **tokens, const char *input, size_t *i, char
     char quote_type;
     size_t start;
     char *content;
+    char *result;
+    char *temp;
 
     quote_type = input[*i];
-    start = *i;
-    (*i)++;
+    (*i)++;  // Salta la virgoletta iniziale
+    result = ft_strdup("");
     while (input[*i] && input[*i] != quote_type)
-        (*i)++;
+    {
+        if (input[*i] == '$' && quote_type == '"')
+        {
+            temp = expand_env_var(input, i, envp);
+            content = ft_strjoin(result, temp);
+            free(result);
+            free(temp);
+            result = content;
+        }
+        else
+        {
+            temp = ft_strndup(&input[*i], 1);
+            content = ft_strjoin(result, temp);
+            free(result);
+            free(temp);
+            result = content;
+            (*i)++;
+        }
+    }
     if (!input[*i])
         free_exit_str(NULL, 1, "Error: unmatched quote");
-    (*i)++;
-    content = ft_strndup(&input[start], *i - start);
-    add_token(tokens, TOKEN_TEXT, content);
-    free(content);
+    (*i)++;  // Salta la virgoletta finale
+    add_token(tokens, TOKEN_TEXT, result);
+    free(result);
 }
 
 // Processa una parola non quotata
@@ -159,38 +191,32 @@ void process_word(t_token **tokens, const char *input, size_t *i)
     start = *i;
     while (input[*i] && !ft_isspace(input[*i]) && !is_special_char(input[*i]) && !is_quote(input[*i]))
         (*i)++;
-    add_word_token(tokens, input, start, *i);
+    if (*i > start)
+    {
+        char *word = ft_strndup(&input[start], *i - start);
+        add_token(tokens, TOKEN_WORD, word);
+        free(word);
+    }
 }
 
 // Lexer principale modificato
 t_token *lexer(const char *input, size_t i, t_token *tokens, char **envp)
 {
-    size_t start;
-
     while (input[i])
     {
         if (ft_isspace(input[i]))
-        {
             i++;
-            continue;
-        }
-        if (is_quote(input[i]))
-        {
+        else if (is_quote(input[i]))
             process_quoted_content(&tokens, input, &i, envp);
-        }
         else if (input[i] == '|')
         {
             add_token(&tokens, TOKEN_PIPE, "|");
             i++;
         }
         else if (is_redirect_char(input[i]))
-        {
             handle_redirect(&tokens, input, &i);
-        }
         else
-        {
             process_word(&tokens, input, &i);
-        }
     }
     return (tokens);
 }
