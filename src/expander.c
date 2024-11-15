@@ -6,14 +6,11 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 12:47:38 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 18:57:23 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/15 12:07:14 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
-
 
 char *expand_env_in_quotes(const char *input, size_t *start, size_t *end, char **envp, char *text)
 {

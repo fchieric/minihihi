@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/12 15:11:18 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 19:30:24 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/15 12:23:01 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,15 +23,29 @@ void print_tokens(t_token *tokens)
 	}
 }
 
+/*
+
+0: echo
+4: "hello 'world'"
+1: |
+0: grep
+4: 'pattern >'
+7: >>
+0: output.txt
+
+il token quote in text tiene in cosiderazione le virgolette (nell'output value del token)
+
+*/
+
 int main(int argc, char **argv, char **envp)
 {
 	//const char *input = "echo -n   \"hello world\" | grep 'pattern' > file.txt";
 	//const char *input = "echo -n   \"       hello\" | cat                    > file.txt";
 	//const char *input = "cat << EOF | grep \"pattern\" > output.txt && echo \"Done\"";
-	//const char *input = "echo \"hello 'world'\" | grep 'pattern >' >> output.txt";
+	//const char *input = "echo \"hello \'world\'\" | grep \'pattern >\' >> output.txt";
 	//const char *input = "echo \"hello world | grep 'pattern";
-	//const char *input = "cat << EOF | echo \"$HOME\" > result.txt";
-	const char *input = "echo \"hello \"$USER\", welcome\"";
+	const char *input = "cat << EOF | echo \"$HOME\" > result.txt";
+	//const char *input = "echo \"hello \"$USER\", welcome\"";
 	if (!envp || !*envp) // Verifica se `envp` è NULL o vuoto
 	{
 		fprintf(stderr, "Error: Environment variables are not available\n");
@@ -42,3 +56,4 @@ int main(int argc, char **argv, char **envp)
 	return (0);
 }
 
+// CAPIRE PERCHE EOF LO PRENDE COME ENUM 0

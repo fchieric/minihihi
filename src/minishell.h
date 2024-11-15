@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/13 19:30:43 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 17:25:12 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/15 12:16:03 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,9 @@ char	*ft_strjoin_and_free(char *s1, const char *s2);
 char	*expand_env_in_quotes(const char *input, size_t *start, size_t *end, char **envp, char *text);
 char	*get_env_value(const char *var, char **envp);
 
+char	*expand_variable(const char *input, size_t *start, size_t *end, char **envp);
+void	token_helper(t_token **tokens, const char *input, size_t *i);
+char	*handle_variable(const char *input, size_t *i, size_t start, char **envp);
 
 
 /*
