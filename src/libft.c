@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/14 10:54:23 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/14 17:21:52 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/16 13:00:27 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,27 +137,51 @@ int	ft_isalnum(int c)
 		return (0);
 }
 
-int ft_strlen(const char *s)
-{
-	int i;
 
-	i = 0;
-	while (s[i])
-		i++;
-	return (i);
+size_t ft_strlen(const char *str)
+{
+    size_t len = 0;
+    while (str[len] != '\0') {
+        len++;
+    }
+    return len;
 }
 
-char	*ft_strjoin_and_free(char *s1, const char *s2)
-{
-	char	*result;
 
-	if (!s1 && !s2)
+char	*ft_substr(const char *s, unsigned int start, size_t len)
+{
+	char	*substr;
+	size_t	i;
+	size_t	s_len;
+
+	if (!s)
 		return (NULL);
-	if (!s1)
-		return (ft_strdup(s2)); // Assicurati di avere ft_strdup implementato
-	if (!s2)
-		return (s1); // Non liberiamo s1 perché è già il risultato
-	result = ft_strjoin(s1, s2);
-	free(s1);
-	return (result);
+
+	s_len = ft_strlen(s);
+
+	// Se `start` è maggiore della lunghezza della stringa, restituisci una stringa vuota
+	if (start >= s_len)
+		return (strdup(""));
+
+	// Calcola la lunghezza della sottostringa effettiva
+	if (start + len > s_len)
+		len = s_len - start;
+
+	// Alloca memoria per la sottostringa
+	substr = (char *)malloc(len + 1);
+	if (!substr)
+		return (NULL);
+
+	// Copia i caratteri dalla posizione `start` per `len` caratteri
+	i = 0;
+	while (i < len && s[start + i])
+	{
+		substr[i] = s[start + i];
+		i++;
+	}
+
+	// Aggiungi il terminatore nullo
+	substr[i] = '\0';
+
+	return (substr);
 }

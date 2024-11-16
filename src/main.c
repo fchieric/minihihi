@@ -5,55 +5,64 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/11/12 15:11:18 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/15 12:23:01 by fabi             ###   ########.fr       */
+/*   Created: 2024/11/16 21:30:11 by fabi              #+#    #+#             */
+/*   Updated: 2024/11/16 18:52:25 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Funzione di test per stampare i token
-void print_tokens(t_token *tokens)
+static void	test_lexer(const char *input, char **envp)
 {
-	while (tokens != NULL)
+	t_token	*tokens;
+
+	printf("\nInput: %s\n", input);
+	tokens = lexer(input, envp);
+	print_tokens(tokens);
+	free_tokens(tokens);
+}
+
+void	print_tokens(t_token *tokens)
+{
+	static const char *type_str[] = {
+		"WORD",
+		"TEXT",
+		"VAR",
+		"PIPE",
+		"REDIR_IN",
+		"REDIR_OUT",
+		"APPEND",
+		"HEREDOC"
+	};
+
+	printf("Tokens:\n");
+	while (tokens)
 	{
-		printf("%d: ", tokens->type);
-		printf("%s\n", tokens->value);
+		printf("Type: %s (%d), Value: %s\n", 
+			type_str[tokens->type], tokens->type, tokens->value);
 		tokens = tokens->next;
 	}
+	printf("-------------------\n");
 }
 
-/*
-
-0: echo
-4: "hello 'world'"
-1: |
-0: grep
-4: 'pattern >'
-7: >>
-0: output.txt
-
-il token quote in text tiene in cosiderazione le virgolette (nell'output value del token)
-
-*/
-
-int main(int argc, char **argv, char **envp)
+int	main(int argc, char **argv, char **envp)
 {
-	//const char *input = "echo -n   \"hello world\" | grep 'pattern' > file.txt";
-	//const char *input = "echo -n   \"       hello\" | cat                    > file.txt";
-	//const char *input = "cat << EOF | grep \"pattern\" > output.txt && echo \"Done\"";
-	//const char *input = "echo \"hello \'world\'\" | grep \'pattern >\' >> output.txt";
-	//const char *input = "echo \"hello world | grep 'pattern";
-	const char *input = "cat << EOF | echo \"$HOME\" > result.txt";
-	//const char *input = "echo \"hello \"$USER\", welcome\"";
-	if (!envp || !*envp) // Verifica se `envp` è NULL o vuoto
-	{
-		fprintf(stderr, "Error: Environment variables are not available\n");
+	(void)argc;
+	(void)argv;
+
+	if (!envp)
 		return (1);
-	}
-	t_token *tokens = lexer(input, 0, NULL, envp);
-	print_tokens(tokens);
+
+	test_lexer("echo \"\"", envp);           // Una coppia di quote vuote
+	test_lexer("echo \"\"\"\"", envp);       // Due coppie di quote vuote
+	test_lexer("echo ''", envp);             // Quote singole vuote
+	test_lexer("echo ''\"\"", envp);         // Mix di quote vuote
+	test_lexer("echo \"\"''\"\"", envp);     // Multiple quote vuote miste
+	
+	// Test quote vuote con testo
+	test_lexer("echo \"\"hello", envp);      // Quote vuote seguite da testo
+	test_lexer("echo hello\"\"", envp);      // Testo seguito da quote vuote
+	test_lexer("echo \"\"$USER\"\"", envp);  // Quote vuote con variabile
+
 	return (0);
 }
-
-// CAPIRE PERCHE EOF LO PRENDE COME ENUM 0
