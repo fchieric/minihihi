@@ -6,14 +6,13 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 20:45:11 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/16 18:51:45 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/18 12:23:56 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 /* Forward declarations */
-static int		is_special_char(char c);
 static char		*get_word(const char *input, size_t *i);
 static char		*expand_env_var(const char *input, size_t *i, char **envp);
 static char		*handle_single_quotes(const char *input, size_t *i);
@@ -141,43 +140,49 @@ static void	handle_special_chars(t_token **tokens, const char *input, size_t *i)
 	}
 }
 
-static void	handle_quotes(t_token **tokens, const char *input, size_t *i, 
-				char **envp)
+static void handle_quotes(t_token **tokens, const char *input, size_t *i, char **envp)
 {
-	char	quote_type;
-	char	*content;
-	char	*tmp;
-	char	*result;
-	int		empty_quote;
+    char    *content;
+    char    *tmp;
+    char    *result;
+    int     has_content;
 
-	result = ft_strdup("");
-	empty_quote = 1;  // Flag per tenere traccia se stiamo processando solo quote vuote
-	while (input[*i] && (input[*i] == '\'' || input[*i] == '"' || 
-		input[*i] == '$'))
-	{
-		if (input[*i] == '\'')
-			content = handle_single_quotes(input, i);
-		else if (input[*i] == '"')
-			content = handle_double_quotes(input, i, envp);
-		else
-		{
-			content = expand_env_var(input, i, envp);
-			if (content && *content)
-				empty_quote = 0;
-		}
-		if (!content)
-			content = ft_strdup("");
-		if (*content)
-			empty_quote = 0;
-		tmp = result;
-		result = ft_strjoin(tmp, content);
-		free(tmp);
-		free(content);
-	}
-	// Aggiungi il token anche se è vuoto
-	add_token(tokens, TOKEN_TEXT, result);
-	free(result);
+    result = ft_strdup("");
+    has_content = 0;  // Flag per tracciare se abbiamo contenuto effettivo
+
+    while (input[*i] && (input[*i] == '\'' || input[*i] == '"' || input[*i] == '$'))
+    {
+        if (input[*i] == '\'')
+            content = handle_single_quotes(input, i);
+        else if (input[*i] == '"')
+            content = handle_double_quotes(input, i, envp);
+        else
+        {
+            content = expand_env_var(input, i, envp);
+            if (content && *content)
+                has_content = 1;
+        }
+
+        if (!content)
+            content = ft_strdup("");
+        if (*content)
+            has_content = 1;
+
+        tmp = result;
+        result = ft_strjoin(tmp, content);
+        free(tmp);
+        free(content);
+    }
+
+    // Se abbiamo contenuto effettivo o è una stringa vuota esplicita (quote vuote)
+    if (has_content || result[0] == '\0')
+        add_token(tokens, TOKEN_TEXT, result);
+    else
+        add_token(tokens, TOKEN_WORD, result);  // Per parole normali
+
+    free(result);
 }
+
 
 
 t_token	*lexer(const char *input, char **envp)

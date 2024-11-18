@@ -6,7 +6,7 @@
 /*   By: fabi <fabi@student.42.fr>                  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 21:30:11 by fabi              #+#    #+#             */
-/*   Updated: 2024/11/16 18:52:25 by fabi             ###   ########.fr       */
+/*   Updated: 2024/11/18 12:25:59 by fabi             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,16 +53,13 @@ int	main(int argc, char **argv, char **envp)
 	if (!envp)
 		return (1);
 
-	test_lexer("echo \"\"", envp);           // Una coppia di quote vuote
-	test_lexer("echo \"\"\"\"", envp);       // Due coppie di quote vuote
-	test_lexer("echo ''", envp);             // Quote singole vuote
-	test_lexer("echo ''\"\"", envp);         // Mix di quote vuote
-	test_lexer("echo \"\"''\"\"", envp);     // Multiple quote vuote miste
-	
-	// Test quote vuote con testo
-	test_lexer("echo \"\"hello", envp);      // Quote vuote seguite da testo
-	test_lexer("echo hello\"\"", envp);      // Testo seguito da quote vuote
-	test_lexer("echo \"\"$USER\"\"", envp);  // Quote vuote con variabile
+	test_lexer("echo \"$USER$HOME\"", envp);
+	test_lexer("echo \"\'$USER\'\"", envp);
+	test_lexer("echo \"$NONEXISTENT\"", envp);
+	test_lexer("echo \"hello$USER\"world", envp);
 
 	return (0);
 }
+
+
+
